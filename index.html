@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEBOLUS AI - GPT-5 PRO</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            color: #0066cc;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            min-height: 100vh;
+            background: white;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 102, 204, 0.1);
+        }
+
+        /* HEADER */
+        .header {
+            padding: 20px 20px 10px;
+            border-bottom: 2px solid #0066cc;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: #0066cc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0066cc;
+            margin-bottom: 2px;
+        }
+
+        .logo-text p {
+            color: #3399ff;
+            font-size: 12px;
+        }
+
+        /* STATUS BAR */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: #f0f7ff;
+            margin: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid #0066cc;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #0066cc;
+            box-shadow: 0 0 10px #0066cc;
+            animation: pulse 2s infinite;
+        }
+
+        .status-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0066cc;
+        }
+
+        .model-badge {
+            background: #e6f0ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #0066cc;
+            border: 1px solid #0066cc;
+            font-weight: 600;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* MAIN CHAT AREA */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: calc(100vh - 200px);
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 85%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: #0066cc;
+            color: white;
+        }
+
+        .message.bot .message-avatar {
+            background: #3399ff;
+            color: white;
+        }
+
+        .message-content {
+            background: #f0f7ff;
+            padding: 12px 16px;
+            border-radius: 18px;
+            border: 1px solid #0066cc;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #0066cc;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: #3399ff;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        /* TYPING INDICATOR */
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: #f0f7ff;
+            border-radius: 18px;
+            width: fit-content;
+            margin-left: 52px;
+            border: 1px solid #0066cc;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #0066cc;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        /* INPUT AREA */
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #0066cc;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .input-wrapper {
+            background: #f0f7ff;
+            border: 2px solid #0066cc;
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .input-wrapper:focus-within {
+            box-shadow: 0 0 15px rgba(0, 102, 204, 0.3);
+        }
+
+        #userInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #0066cc;
+            font-size: 14px;
+            padding: 10px 0;
+            outline: none;
+        }
+
+        #userInput::placeholder {
+            color: #99c2ff;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid #0066cc;
+            background: white;
+            color: #0066cc;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .btn:hover {
+            background: #0066cc;
+            color: white;
+        }
+
+        .btn:active {
+            transform: scale(0.9);
+        }
+
+        .btn.send {
+            background: #0066cc;
+            color: white;
+            border: 2px solid #0066cc;
+        }
+
+        .btn.send:hover {
+            background: #3399ff;
+            border-color: #3399ff;
+        }
+
+        /* FEATURES GRID */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 0 20px 20px;
+        }
+
+        .feature-card {
+            background: #f0f7ff;
+            border: 2px solid #0066cc;
+            border-radius: 16px;
+            padding: 12px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .feature-card:hover {
+            background: #e6f0ff;
+        }
+
+        .feature-card:active {
+            transform: scale(0.95);
+        }
+
+        .feature-icon {
+            font-size: 20px;
+            color: #0066cc;
+            margin-bottom: 5px;
+        }
+
+        .feature-card span {
+            font-size: 11px;
+            font-weight: 600;
+            color: #0066cc;
+        }
+
+        /* WELCOME MESSAGE */
+        .welcome-message {
+            text-align: center;
+            padding: 30px 20px;
+            color: #0066cc;
+        }
+
+        .welcome-icon {
+            font-size: 60px;
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+
+        .welcome-message h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-message p {
+            color: #3399ff;
+            font-size: 14px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SCROLLBAR */
+        .chat-container::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: #f0f7ff;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #0066cc;
+            border-radius: 5px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #3399ff;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 10px;
+            color: #99c2ff;
+            border-top: 1px solid #0066cc;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="logo-text">
+                <h1>NEBOLUS AI</h1>
+                <p>Powered by GPT-5 Pro</p>
+            </div>
+        </div>
+
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="dot"></div>
+                <span class="status-text">GPT-5 Pro Connected</span>
+            </div>
+            <div class="model-badge">
+                <i class="fas fa-bolt" style="margin-right: 4px;"></i> openai/gpt-5-pro
+            </div>
+        </div>
+
+        <!-- MAIN CHAT AREA -->
+        <div class="chat-container" id="chatContainer">
+            <div class="welcome-message">
+                <div class="welcome-icon">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <h2>Halo! Ada yang bisa dibantu?</h2>
+                <p>Saya adalah NEBOLUS AI dengan GPT-5 Pro dari api.ai.cc<br>Silakan tanya apapun!</p>
+            </div>
+            
+            <!-- Messages akan ditambahkan di sini via JavaScript -->
+        </div>
+
+        <!-- QUICK FEATURES -->
+        <div class="features-grid">
+            <div class="feature-card" onclick="quickPrompt('Write a one-sentence bedtime story about a unicorn.')">
+                <div class="feature-icon"><i class="fas fa-feather-alt"></i></div>
+                <span>Unicorn Story</span>
+            </div>
+            <div class="feature-card" onclick="quickPrompt('Write a Python function to calculate fibonacci')">
+                <div class="feature-icon"><i class="fas fa-code"></i></div>
+                <span>Python Code</span>
+            </div>
+            <div class="feature-card" onclick="quickPrompt('Explain quantum computing in simple terms')">
+                <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
+                <span>Explanation</span>
+            </div>
+            <div class="feature-card" onclick="quickPrompt('Translate to Indonesian: Hello, how are you?')">
+                <div class="feature-icon"><i class="fas fa-language"></i></div>
+                <span>Translate</span>
+            </div>
+        </div>
+
+        <!-- INPUT AREA -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <input type="text" id="userInput" placeholder="Ketik pesan Anda di sini..." onkeypress="handleKeyPress(event)">
+                <div class="action-buttons">
+                    <button class="btn" onclick="clearChat()" title="Clear chat">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <button class="btn send" onclick="sendMessage()" title="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <i class="fas fa-shield-alt"></i> Terhubung ke api.ai.cc • Model: openai/gpt-5-pro
+        </div>
+    </div>
+
+    <!-- TYPING INDICATOR (HIDDEN BY DEFAULT) -->
+    <div class="typing-indicator" id="typingIndicator">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <script>
+        // API CONFIGURATION - Sama persis dengan kode Python yang diberikan
+        const API_CONFIG = {
+            baseUrl: "https://api.ai.cc/v1",
+            apiKey: "",  // API key kosong seperti di contoh Python
+            model: "openai/gpt-5-pro"
+        };
+
+        // DOM Elements
+        const chatContainer = document.getElementById('chatContainer');
+        const userInput = document.getElementById('userInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Chat History
+        let chatHistory = [];
+
+        // Initialize
+        function init() {
+            console.log('NEBOLUS AI - Terhubung ke api.ai.cc dengan model:', API_CONFIG.model);
+            
+            // Contoh pesan selamat datang dengan contoh dari kode Python
+            setTimeout(() => {
+                const exampleResponse = "In a magical forest where moonlight painted silver paths, Luna the unicorn discovered that her horn could weave dreams into the night sky for all sleeping children.";
+                addMessageToChat({
+                    role: 'bot',
+                    content: '🌟 **Contoh response dari GPT-5 Pro:**\n\n' + exampleResponse + '\n\n*(Ini adalah contoh. Kirim pesan untuk response real-time!)*',
+                    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                });
+            }, 1000);
+        }
+
+        // Handle Enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Send message function
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            const userMessage = {
+                role: 'user',
+                content: message,
+                time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+            };
+            addMessageToChat(userMessage);
+            
+            // Clear input
+            userInput.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Get response from API
+            await getAPIResponse(message);
+        }
+
+        // Quick prompt function
+        function quickPrompt(prompt) {
+            userInput.value = prompt;
+            sendMessage();
+        }
+
+        // Get response from API.ai.cc - SAMA PERSIS dengan kode Python
+        async function getAPIResponse(prompt) {
+            try {
+                // Ini adalah implementasi JavaScript dari kode Python:
+                /*
+                client = OpenAI(
+                    base_url="https://api.ai.cc/v1",
+                    api_key="",
+                )
+                response = client.responses.create(
+                    model="openai/gpt-5-pro",
+                    input="Write a one-sentence bedtime story about a unicorn."
+                )
+                */
+
+                const response = await fetch(`${API_CONFIG.baseUrl}/responses`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.apiKey}`  // API key kosong
+                    },
+                    body: JSON.stringify({
+                        model: API_CONFIG.model,
+                        input: prompt
+                    })
+                });
+
+                // Hide typing indicator
+                hideTypingIndicator();
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Format response sesuai dengan struktur OpenAI Responses API
+                    let botResponse = '';
+                    if (data.output_text) {
+                        botResponse = data.output_text;
+                    } else if (data.output && data.output[0]?.content?.[0]?.text) {
+                        botResponse = data.output[0].content[0].text;
+                    } else if (data.choices && data.choices[0]?.message?.content) {
+                        botResponse = data.choices[0].message.content;
+                    } else {
+                        botResponse = JSON.stringify(data, null, 2);
+                    }
+                    
+                    const botMessage = {
+                        role: 'bot',
+                        content: botResponse,
+                        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                    };
+                    addMessageToChat(botMessage);
+                } else {
+                    const errorData = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorData}`);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                hideTypingIndicator();
+                
+                // Tampilkan error dengan sopan
+                const errorMessage = {
+                    role: 'bot',
+                    content: `❌ **Error:** ${error.message}\n\n` +
+                             `**Tips:**\n` +
+                             `1. Pastikan endpoint https://api.ai.cc/v1 bisa diakses\n` +
+                             `2. Cek apakah model "openai/gpt-5-pro" tersedia\n` +
+                             `3. Mungkin perlu API key yang valid\n\n` +
+                             `**Contoh response yang seharusnya (dari kode Python):**\n` +
+                             `"In a magical forest where moonlight painted silver paths, Luna the unicorn discovered that her horn could weave dreams into the night sky for all sleeping children."`,
+                    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                };
+                addMessageToChat(errorMessage);
+            }
+        }
+
+        // Test API dengan prompt yang sama seperti di Python
+        async function testAPIConnection() {
+            showTypingIndicator();
+            
+            try {
+                const response = await fetch(`${API_CONFIG.baseUrl}/responses`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: API_CONFIG.model,
+                        input: "Write a one-sentence bedtime story about a unicorn."
+                    })
+                });
+                
+                hideTypingIndicator();
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    let responseText = data.output_text || JSON.stringify(data);
+                    
+                    addMessageToChat({
+                        role: 'bot',
+                        content: `✅ **Test Connection Successful!**\n\n**Response:**\n${responseText}`,
+                        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                    });
+                } else {
+                    addMessageToChat({
+                        role: 'bot',
+                        content: `⚠️ **Test Connection:**\nServer merespon dengan status ${response.status}\n\n**Contoh response yang diharapkan:**\n"In a magical forest where moonlight painted silver paths, Luna the unicorn discovered that her horn could weave dreams into the night sky for all sleeping children."`,
+                        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                    });
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessageToChat({
+                    role: 'bot',
+                    content: `❌ **Connection Failed:** ${error.message}\n\n**Contoh response yang diharapkan:**\n"In a magical forest where moonlight painted silver paths, Luna the unicorn discovered that her horn could weave dreams into the night sky for all sleeping children."`,
+                    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                });
+            }
+        }
+
+        // Add message to chat
+        function addMessageToChat(message) {
+            // Remove welcome message if it exists and this is first real message
+            const welcomeDiv = document.querySelector('.welcome-message');
+            if (welcomeDiv && chatContainer.children.length > 1) {
+                welcomeDiv.style.display = 'none';
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.role}`;
+            
+            let avatarIcon = message.role === 'user' ? 'fa-user' : 'fa-robot';
+            
+            // Parse markdown-style bold text
+            let formattedContent = message.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formattedContent = formattedContent.replace(/\n/g, '<br>');
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas ${avatarIcon}"></i>
+                </div>
+                <div style="max-width: 85%;">
+                    <div class="message-content">
+                        ${formattedContent}
+                    </div>
+                    <div class="message-time">${message.time}</div>
+                </div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Add to history
+            chatHistory.push(message);
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            if (!document.querySelector('.typing-indicator[style*="display: flex"]')) {
+                const indicator = typingIndicator.cloneNode(true);
+                indicator.id = 'activeTypingIndicator';
+                indicator.style.display = 'flex';
+                chatContainer.appendChild(indicator);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('activeTypingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        // Clear chat
+        function clearChat() {
+            if (confirm('Hapus semua percakapan?')) {
+                chatContainer.innerHTML = '';
+                chatHistory = [];
+                
+                // Show welcome message again
+                const welcomeDiv = document.createElement('div');
+                welcomeDiv.className = 'welcome-message';
+                welcomeDiv.innerHTML = `
+                    <div class="welcome-icon">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <h2>Halo! Ada yang bisa dibantu?</h2>
+                    <p>Saya adalah NEBOLUS AI dengan GPT-5 Pro dari api.ai.cc<br>Silakan tanya apapun!</p>
+                `;
+                chatContainer.appendChild(welcomeDiv);
+            }
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            init();
+            
+            // Optional: test connection after 2 seconds
+            setTimeout(() => {
+                if (confirm('Test koneksi ke API?')) {
+                    testAPIConnection();
+                }
+            }, 2000);
+        };
+
+        // Untuk mengatasi CORS jika diperlukan
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+            options = options || {};
+            options.mode = 'cors';
+            options.credentials = 'omit';
+            return originalFetch.call(this, url, options);
+        };
+    </script>
+</body>
+</html>
